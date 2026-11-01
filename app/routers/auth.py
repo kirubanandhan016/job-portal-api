@@ -18,7 +18,7 @@ def register(payload: UserCreate, db: Session = Depends(get_db)) -> User:
         email=str(payload.email).lower(),
         hashed_password=hash_password(payload.password),
         full_name=payload.full_name,
-        role=payload.role,
+        role="job_seeker",
     )
     db.add(user)
     try:

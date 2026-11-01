@@ -1,167 +1,158 @@
-# 💼 Job Portal API
+# Job Portal API
 
-### A Simple Job Portal Built with Python, FastAPI & PostgreSQL
+A role-aware recruitment REST API built with Python, FastAPI, SQLAlchemy, and PostgreSQL. The application supports job seekers, employers, job listings, and applications, with a small static frontend served by FastAPI.
 
-A web-based job portal where users can register, log in, explore job listings, post jobs, and apply for opportunities. Built with a Python backend and a PostgreSQL database.
+## Features
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Status-In%20Development-orange" alt="Project Status">
-</p>
+- User registration and token-based authentication
+- Public job listing, search, and filtering
+- Employer-only job creation, updating, and deletion
+- Job-seeker application submission and withdrawal
+- Employer application review and status updates
+- Role and resource-ownership checks
+- SQLAlchemy relational models and Pydantic request/response schemas
+- Static HTML, CSS, and JavaScript frontend
 
----
+**Account provisioning:** Public registration always creates a `job_seeker` account. Employer accounts must be provisioned by a trusted operator; a public request cannot grant itself employer permissions.
 
-## ✨ Features
+## Technology stack
 
-- 🔐 **User Authentication** — Register and log in securely.
-- 💼 **Job Listings** — Browse available job opportunities.
-- 📝 **Job Management** — Create, update, and manage job postings.
-- 📄 **Job Applications** — Apply for jobs and manage applications.
-- 👤 **User Management** — Manage user information.
-- 🔑 **Role-Based Access** — Separate permissions for employers and job seekers.
-- ⚡ **REST API** — Access backend functionality through API endpoints.
-- 🌐 **Web Interface** — Simple frontend built with HTML, CSS, and JavaScript.
+- Python 3.10+
+- FastAPI and Uvicorn
+- SQLAlchemy 2.x
+- PostgreSQL with psycopg 3
+- Pydantic and Pydantic Settings
+- JWT using python-jose
+- Argon2 password hashing using pwdlib
+- pytest and HTTPX for tests
 
-## 🛠️ Tech Stack
+## Getting started
 
-| Technology | Purpose |
-|---|---|
-| Python | Backend programming |
-| FastAPI | REST API framework |
-| PostgreSQL | Relational database |
-| SQLAlchemy | Database ORM |
-| Pydantic | Data validation |
-| HTML | Web page structure |
-| CSS | Styling and layout |
-| JavaScript | Frontend interactions |
-| Uvicorn | ASGI server |
-
-## 📁 Project Structure
-
-```text
-job-portal-api/
-│
-├── app/
-│   ├── routers/
-│   │   ├── auth.py
-│   │   ├── users.py
-│   │   ├── jobs.py
-│   │   └── applications.py
-│   │
-│   ├── static/
-│   │   ├── index.html
-│   │   ├── styles.css
-│   │   └── app.js
-│   │
-│   ├── __init__.py
-│   ├── auth.py
-│   ├── database.py
-│   ├── dependencies.py
-│   ├── main.py
-│   ├── models.py
-│   └── schemas.py
-│
-├── .env.example
-├── .gitignore
-├── requirements.txt
-└── README.md
-```
-
-## 🚀 Getting Started
-
-### 1. Clone the Repository
+### 1. Clone the repository
 
 ```bash
 git clone https://github.com/kirubanandhan016/job-portal-api.git
 cd job-portal-api
 ```
 
-### 2. Create a Virtual Environment
+### 2. Create a virtual environment
 
-```bash
-python -m venv .venv
-```
-
-### 3. Activate the Virtual Environment
-
-**Windows PowerShell:**
+Windows PowerShell:
 
 ```powershell
+py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ```
 
-### 4. Install Dependencies
+macOS / Linux:
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+```
+
+### 3. Install dependencies
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-### 5. Configure Environment Variables
+### 4. Configure PostgreSQL and environment variables
 
-Create a `.env` file in the project root using `.env.example` as a template.
+Create a PostgreSQL database and user, then copy the example environment file.
 
-Configure your PostgreSQL database credentials and generate a secure `SECRET_KEY`.
+Windows PowerShell:
 
-**Important:** Never commit your `.env` file or expose your database password or secret key.
+```powershell
+Copy-Item .env.example .env
+```
 
-### 6. Set Up PostgreSQL
+macOS / Linux:
 
-Make sure PostgreSQL is installed and running.
+```bash
+cp .env.example .env
+```
 
-Create the database and user according to your `.env` configuration. Ensure the database name, username, password, host, and port match the application's settings.
+Set `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` to your local database values. Generate a unique signing key:
 
-### 7. Run the Application
+```bash
+python -c "import secrets; print(secrets.token_urlsafe(48))"
+```
+
+Set the generated value as `SECRET_KEY`. Do not commit `.env` or real credentials.
+
+### 5. Run the application
 
 ```bash
 python -m uvicorn app.main:app --reload
 ```
 
-## 🌐 Access the Application
+The current application creates its SQLAlchemy tables during startup. A migration workflow should be added before production use; the project does not currently contain Alembic migrations.
 
-After the server starts, open the following addresses:
+- Frontend: http://127.0.0.1:8000/
+- Swagger UI: http://127.0.0.1:8000/docs
+- ReDoc: http://127.0.0.1:8000/redoc
+- Health check: http://127.0.0.1:8000/health
 
-| Resource | URL |
-|---|---|
-| Web Application | http://127.0.0.1:8000/ |
-| Interactive API Docs | http://127.0.0.1:8000/docs |
-| Alternative API Docs | http://127.0.0.1:8000/redoc |
+## API reference
 
-The web application URL assumes the frontend is served from the root route.
+### Authentication
 
-## 🔌 API Modules
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| POST | `/auth/register` | Public | Register a job-seeker account |
+| POST | `/auth/token` | Public | Obtain an access token using form fields `username` and `password` |
 
-| Module | Description |
-|---|---|
-| Authentication | User registration and login |
-| Users | User-related operations |
-| Jobs | Job listing and job management |
-| Applications | Job application management |
+### Users
 
-For available endpoints, request schemas, and response examples, start the application and visit `/docs`.
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| GET | `/users/me` | Authenticated | Read the current user's profile |
+| PATCH | `/users/me` | Authenticated | Update the current user's name |
 
-## 🔒 Security
+### Jobs
 
-- Store secrets and credentials in environment variables.
-- Keep `.env` out of version control.
-- Use strong, unique database passwords.
-- Protect authenticated endpoints with appropriate authorization.
-- Never publish access tokens or private credentials.
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| GET | `/jobs` | Public | List and filter jobs; supports search, location, employment type, salary floor, offset, and limit |
+| GET | `/jobs/{job_id}` | Public | Read one job |
+| POST | `/jobs` | Employer | Create a job |
+| PUT | `/jobs/{job_id}` | Owning employer | Replace a job listing |
+| DELETE | `/jobs/{job_id}` | Owning employer | Delete a job listing |
 
-## 🎯 Project Goal
+### Applications
 
-The goal of this project is to build a practical job portal while developing backend engineering skills with Python, FastAPI, REST APIs, authentication, and PostgreSQL.
+| Method | Endpoint | Access | Purpose |
+|---|---|---|---|
+| POST | `/applications` | Job seeker | Apply to a job |
+| GET | `/applications` | Authenticated | List applications visible to the current user |
+| GET | `/applications/{application_id}` | Applicant or owning employer | Read one application |
+| PATCH | `/applications/{application_id}` | Owning employer | Set status to reviewed, accepted, or rejected |
+| DELETE | `/applications/{application_id}` | Owning applicant | Withdraw a pending application |
 
-## 👨‍💻 Author
+Protected endpoints require an `Authorization: Bearer <access_token>` header. The full request and response schemas are available from Swagger UI at `/docs`.
 
-**Kirubanandhan**
+## Tests
 
-GitHub: [@kirubanandhan016](https://github.com/kirubanandhan016)
+The test suite uses an isolated in-memory SQLite database and does not require a running PostgreSQL server:
 
----
+```bash
+python -m pytest -v
+```
 
-<p align="center">
-  <b>Built with Python ❤️</b><br>
-  Learning, building, and improving one project at a time.
-</p>
+GitHub Actions runs the same tests on pushes and pull requests.
+
+## Known limitations and next engineering steps
+
+- The application currently calls `Base.metadata.create_all()` at startup instead of applying versioned Alembic migrations.
+- Public registration creates job-seeker accounts only; employer onboarding is an operator-controlled task.
+- PostgreSQL integration should be verified against a real PostgreSQL service before deployment.
+- Add pagination metadata, structured logging, migration-based schema management, and broader authorization tests before production use.
+- This is a portfolio project and is not intended to process real candidate or employer data without further security review.
+
+## Author
+
+**Kirubanandhan V**
+
+- GitHub: https://github.com/kirubanandhan016
+- LinkedIn: https://www.linkedin.com/in/kirubanandhan-v-98bb83443/
