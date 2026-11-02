@@ -1,167 +1,102 @@
-# 💼 Job Portal API
+# Job Portal API
 
-### A Simple Job Portal Built with Python, FastAPI & PostgreSQL
+**Recruitment management backend built with Python, FastAPI, and PostgreSQL.**
 
-A web-based job portal where users can register, log in, explore job listings, post jobs, and apply for opportunities. Built with a Python backend and a PostgreSQL database.
+This project models a job portal where job seekers can browse jobs and submit applications, while employers manage job listings. It is currently a development project.
 
-<p align="center">
-  <img src="https://img.shields.io/badge/Python-3.13-blue?logo=python&logoColor=white" alt="Python">
-  <img src="https://img.shields.io/badge/FastAPI-Backend-009688?logo=fastapi&logoColor=white" alt="FastAPI">
-  <img src="https://img.shields.io/badge/PostgreSQL-Database-4169E1?logo=postgresql&logoColor=white" alt="PostgreSQL">
-  <img src="https://img.shields.io/badge/Status-In%20Development-orange" alt="Project Status">
-</p>
+## Features
 
----
+- User registration and login
+- Job listing and management endpoints
+- Job application workflows
+- Role-based permissions for employers and job seekers
+- PostgreSQL persistence through SQLAlchemy
+- Request validation with Pydantic
+- Interactive API documentation through FastAPI
+- A basic HTML, CSS, and JavaScript interface served by the application
 
-## ✨ Features
+## Technology stack
 
-- 🔐 **User Authentication** — Register and log in securely.
-- 💼 **Job Listings** — Browse available job opportunities.
-- 📝 **Job Management** — Create, update, and manage job postings.
-- 📄 **Job Applications** — Apply for jobs and manage applications.
-- 👤 **User Management** — Manage user information.
-- 🔑 **Role-Based Access** — Separate permissions for employers and job seekers.
-- ⚡ **REST API** — Access backend functionality through API endpoints.
-- 🌐 **Web Interface** — Simple frontend built with HTML, CSS, and JavaScript.
+Python · FastAPI · PostgreSQL · SQLAlchemy · Pydantic · Uvicorn · HTML · CSS · JavaScript
 
-## 🛠️ Tech Stack
-
-| Technology | Purpose |
-|---|---|
-| Python | Backend programming |
-| FastAPI | REST API framework |
-| PostgreSQL | Relational database |
-| SQLAlchemy | Database ORM |
-| Pydantic | Data validation |
-| HTML | Web page structure |
-| CSS | Styling and layout |
-| JavaScript | Frontend interactions |
-| Uvicorn | ASGI server |
-
-## 📁 Project Structure
+## Project structure
 
 ```text
-job-portal-api/
-│
-├── app/
-│   ├── routers/
-│   │   ├── auth.py
-│   │   ├── users.py
-│   │   ├── jobs.py
-│   │   └── applications.py
-│   │
-│   ├── static/
-│   │   ├── index.html
-│   │   ├── styles.css
-│   │   └── app.js
-│   │
-│   ├── __init__.py
+app/
+├── routers/
 │   ├── auth.py
-│   ├── database.py
-│   ├── dependencies.py
-│   ├── main.py
-│   ├── models.py
-│   └── schemas.py
-│
-├── .env.example
-├── .gitignore
-├── requirements.txt
-└── README.md
+│   ├── users.py
+│   ├── jobs.py
+│   └── applications.py
+├── static/
+├── auth.py
+├── database.py
+├── dependencies.py
+├── main.py
+├── models.py
+└── schemas.py
+.env.example
+requirements.txt
 ```
 
-## 🚀 Getting Started
+## Run locally
 
-### 1. Clone the Repository
+### 1. Clone and install
 
 ```bash
 git clone https://github.com/kirubanandhan016/job-portal-api.git
 cd job-portal-api
-```
-
-### 2. Create a Virtual Environment
-
-```bash
 python -m venv .venv
 ```
 
-### 3. Activate the Virtual Environment
+Activate the environment:
 
-**Windows PowerShell:**
-
+**Windows PowerShell**
 ```powershell
 .\.venv\Scripts\Activate.ps1
 ```
 
-### 4. Install Dependencies
+**macOS/Linux**
+```bash
+source .venv/bin/activate
+```
+
+Install dependencies:
 
 ```bash
 python -m pip install -r requirements.txt
 ```
 
-### 5. Configure Environment Variables
+### 2. Configure secrets
 
-Create a `.env` file in the project root using `.env.example` as a template.
+Copy `.env.example` to `.env`, then set your local PostgreSQL credentials and a strong, unique `SECRET_KEY`. The application requires database credentials to be configured; do not use real credentials in source code.
 
-Configure your PostgreSQL database credentials and generate a secure `SECRET_KEY`.
+Never commit `.env` or publish tokens, passwords, or signing keys.
 
-**Important:** Never commit your `.env` file or expose your database password or secret key.
+### 3. Prepare PostgreSQL
 
-### 6. Set Up PostgreSQL
+Install and start PostgreSQL, then create the database and user matching your local environment settings. Confirm the host, port, database name, username, and password are consistent.
 
-Make sure PostgreSQL is installed and running.
-
-Create the database and user according to your `.env` configuration. Ensure the database name, username, password, host, and port match the application's settings.
-
-### 7. Run the Application
+### 4. Start the API
 
 ```bash
 python -m uvicorn app.main:app --reload
 ```
 
-## 🌐 Access the Application
+When the server starts, open:
 
-After the server starts, open the following addresses:
+- Web interface: `http://127.0.0.1:8000/`
+- Swagger UI: `http://127.0.0.1:8000/docs`
+- ReDoc: `http://127.0.0.1:8000/redoc`
 
-| Resource | URL |
-|---|---|
-| Web Application | http://127.0.0.1:8000/ |
-| Interactive API Docs | http://127.0.0.1:8000/docs |
-| Alternative API Docs | http://127.0.0.1:8000/redoc |
+## What to verify
 
-The web application URL assumes the frontend is served from the root route.
+Before using a deployment demo, test the complete workflow: registration, login, job listing, employer job management, application submission, and application status handling. Verify that users cannot modify resources owned by other users or roles.
 
-## 🔌 API Modules
+## Project status
 
-| Module | Description |
-|---|---|
-| Authentication | User registration and login |
-| Users | User-related operations |
-| Jobs | Job listing and job management |
-| Applications | Job application management |
+**In development.** This repository is intended as a learning and portfolio project. Do not treat it as a production recruitment system without additional security review, automated tests, operational configuration, and deployment verification.
 
-For available endpoints, request schemas, and response examples, start the application and visit `/docs`.
+## Author
 
-## 🔒 Security
-
-- Store secrets and credentials in environment variables.
-- Keep `.env` out of version control.
-- Use strong, unique database passwords.
-- Protect authenticated endpoints with appropriate authorization.
-- Never publish access tokens or private credentials.
-
-## 🎯 Project Goal
-
-The goal of this project is to build a practical job portal while developing backend engineering skills with Python, FastAPI, REST APIs, authentication, and PostgreSQL.
-
-## 👨‍💻 Author
-
-**Kirubanandhan**
-
-GitHub: [@kirubanandhan016](https://github.com/kirubanandhan016)
-
----
-
-<p align="center">
-  <b>Built with Python ❤️</b><br>
-  Learning, building, and improving one project at a time.
-</p>
+**Kirubanandhan V** · [GitHub](https://github.com/kirubanandhan016) · [Portfolio](https://kirubanandhan016.github.io/) · [LinkedIn](https://www.linkedin.com/in/kirubanandhan-v-98bb83443/)
