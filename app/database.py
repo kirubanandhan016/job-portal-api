@@ -9,7 +9,8 @@ class Settings(BaseSettings):
     db_port: int = 5432
     db_name: str = "job_portal"
     db_user: str = "job_portal"
-    db_password: str = "job_portal"
+    # Supply DB_PASSWORD through the environment or .env; never use a real password as a code default.
+    db_password: str = ""
     secret_key: str = ""
     access_token_expire_minutes: int = 60
 
@@ -19,6 +20,10 @@ class Settings(BaseSettings):
     def sqlalchemy_url(self) -> str:
         if self.database_url:
             return self.database_url
+        if not self.db_password:
+            raise ValueError(
+                "DB_PASSWORD must be configured when DATABASE_URL is not provided."
+            )
         return URL.create(
             "postgresql+psycopg",
             username=self.db_user,
