@@ -18,14 +18,23 @@ def verify_password(plain_password: str, hashed_password: str) -> bool:
 
 
 def create_access_token(subject: str) -> str:
-    if not settings.secret_key:
-        raise RuntimeError("SECRET_KEY must be configured before issuing access tokens")
+    if len(settings.secret_key) < 32:
+        raise RuntimeError(
+            "SECRET_KEY must be a unique random value of at least 32 characters."
+        )
+    if settings.access_token_expire_minutes <= 0:
+        raise RuntimeError("ACCESS_TOKEN_EXPIRE_MINUTES must be positive.")
 
-    expires_at = datetime.now(timezone.utc) + timedelta(
+    issued_at = datetime.now(timezone.utc)
+    expires_at = issued_at + timedelta(
         minutes=settings.access_token_expire_minutes
     )
     return jwt.encode(
-        {"sub": subject, "exp": expires_at},
+        {
+            "sub": str(subject),
+            "iat": int(issued_at.timestamp()),
+            "exp": int(expires_at.timestamp()),
+        },
         settings.secret_key,
         algorithm=ALGORITHM,
     )
