@@ -6,7 +6,7 @@ from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
 from app import models
-from app.database import Base, engine
+from app.database import Base, engine, settings
 from app.routers import applications, auth, jobs, users
 
 static_dir = Path(__file__).parent / "static"
@@ -14,6 +14,12 @@ static_dir = Path(__file__).parent / "static"
 
 @asynccontextmanager
 async def lifespan(_: FastAPI) -> AsyncIterator[None]:
+    if len(settings.secret_key) < 32:
+        raise RuntimeError(
+            "Set SECRET_KEY to a unique random value of at least 32 characters."
+        )
+    if settings.access_token_expire_minutes <= 0:
+        raise RuntimeError("ACCESS_TOKEN_EXPIRE_MINUTES must be positive.")
     Base.metadata.create_all(bind=engine)
     yield
 
