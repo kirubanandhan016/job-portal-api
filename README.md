@@ -1,5 +1,7 @@
 # Job Portal API
 
+[![Job Portal tests](https://github.com/kirubanandhan016/job-portal-api/actions/workflows/tests.yml/badge.svg)](https://github.com/kirubanandhan016/job-portal-api/actions/workflows/tests.yml)
+
 Recruitment management backend built with Python, FastAPI, SQLAlchemy, and PostgreSQL.
 
 The project models job seekers, employer-managed job listings, and applications. It includes a small static web interface served by FastAPI.
@@ -187,7 +189,7 @@ python -m pytest -v
 
 The focused security tests use an isolated SQLite database and cover public role assignment, rejection of client-supplied roles, employer-only permission checks, valid token resolution, malformed claims, and expired tokens. These tests do not replace an end-to-end PostgreSQL integration test.
 
-GitHub Actions runs the test suite on pushes and pull requests.
+GitHub Actions runs the security test suite on pushes and pull requests, then verifies PostgreSQL 16 connectivity and creation of the users, jobs, and applications tables. The endpoint regression tests currently use an isolated SQLite database; they are not full PostgreSQL end-to-end tests.
 
 ## Project status and limitations
 
