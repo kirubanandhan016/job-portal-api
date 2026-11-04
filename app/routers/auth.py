@@ -18,14 +18,18 @@ def register(payload: UserCreate, db: Session = Depends(get_db)) -> User:
         email=str(payload.email).lower(),
         hashed_password=hash_password(payload.password),
         full_name=payload.full_name,
-        role=payload.role,
+        # Public registration must never grant privileged employer access.
+        role="job_seeker",
     )
     db.add(user)
     try:
         db.commit()
     except IntegrityError:
         db.rollback()
-        raise HTTPException(status_code=409, detail="An account with this email already exists")
+        raise HTTPException(
+            status_code=409,
+            detail="An account with this email already exists",
+        ) from None
     db.refresh(user)
     return user
 

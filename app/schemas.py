@@ -5,10 +5,11 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, model_validator
 
 
 class UserCreate(BaseModel):
+    model_config = ConfigDict(extra="forbid")
+
     email: EmailStr
     password: str = Field(min_length=8, max_length=128)
     full_name: str = Field(min_length=1, max_length=150)
-    role: Literal["job_seeker", "employer"] = "job_seeker"
 
 
 class UserUpdate(BaseModel):

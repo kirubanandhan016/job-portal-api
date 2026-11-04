@@ -28,13 +28,25 @@ def get_current_user(
         detail="Invalid or expired access token",
         headers={"WWW-Authenticate": "Bearer"},
     )
-    if not settings.secret_key:
-        raise RuntimeError("SECRET_KEY must be configured before authenticating requests")
+    if len(settings.secret_key) < 32:
+        raise RuntimeError(
+            "SECRET_KEY must be configured with at least 32 characters."
+        )
     try:
         payload = jwt.decode(token, settings.secret_key, algorithms=[ALGORITHM])
         subject = payload.get("sub")
+        issued_at = payload.get("iat")
+        expires_at = payload.get("exp")
+        if not isinstance(subject, str) or not subject.isdigit():
+            raise unauthorized
+        if isinstance(issued_at, bool) or not isinstance(issued_at, int):
+            raise unauthorized
+        if isinstance(expires_at, bool) or not isinstance(expires_at, int):
+            raise unauthorized
+        if expires_at <= issued_at:
+            raise unauthorized
         user_id = int(subject)
-    except (JWTError, TypeError, ValueError):
+    except (JWTError, AttributeError, TypeError, ValueError):
         raise unauthorized from None
 
     user = db.get(User, user_id)
