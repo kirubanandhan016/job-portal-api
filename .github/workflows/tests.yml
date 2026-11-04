@@ -11,6 +11,23 @@ permissions:
 jobs:
   test:
     runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: job_portal_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d job_portal_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/job_portal_test
+      SECRET_KEY: ci-only-job-portal-signing-secret-never-use-outside-ci
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -23,3 +40,18 @@ jobs:
           python -m pip install -r requirements.txt
       - name: Run security tests
         run: python -m pytest -v
+      - name: Verify PostgreSQL schema and connectivity
+        run: |
+          python - <<'PY'
+          from sqlalchemy import inspect, text
+          from app import models
+          from app.database import Base, engine
+
+          Base.metadata.create_all(bind=engine)
+          with engine.connect() as connection:
+              assert connection.execute(text("SELECT 1")).scalar_one() == 1
+          tables = set(inspect(engine).get_table_names())
+          assert {"users", "jobs", "applications"}.issubset(tables), tables
+          print(f"PostgreSQL tables verified: {sorted(tables)}")
+          engine.dispose()
+          PY
