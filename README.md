@@ -187,9 +187,18 @@ Run:
 python -m pytest -v
 ```
 
-The focused security tests use an isolated SQLite database and cover public role assignment, rejection of client-supplied roles, employer-only permission checks, valid token resolution, malformed claims, and expired tokens. These tests do not replace an end-to-end PostgreSQL integration test.
+The test suite uses an isolated SQLite database and covers:
 
-GitHub Actions runs the security test suite on pushes and pull requests, then verifies PostgreSQL 16 connectivity and creation of the users, jobs, and applications tables. The endpoint regression tests currently use an isolated SQLite database; they are not full PostgreSQL end-to-end tests.
+- Registration security, including rejection of client-supplied employer roles
+- JWT validation, malformed claims, and expired tokens
+- Job search filters and minimum-salary filtering
+- Employer ownership checks for updating and deleting job listings
+- Application submission, duplicate-application conflicts, and withdrawal
+- Employer review permissions and applicant-level resource isolation
+
+The tests exercise the route-handler functions with SQLAlchemy sessions; they are not full HTTP-client end-to-end tests.
+
+GitHub Actions runs the test suite on pushes and pull requests, then verifies PostgreSQL 16 connectivity and creates the users, jobs, and applications tables. The PostgreSQL step is a schema/connectivity smoke check, not a full application workflow test against PostgreSQL. Schema creation currently uses SQLAlchemy `Base.metadata.create_all`; Alembic migrations are not yet implemented.
 
 ## Project status and limitations
 
