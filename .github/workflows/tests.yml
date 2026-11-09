@@ -29,8 +29,8 @@ jobs:
       DATABASE_URL: postgresql+psycopg://postgres:postgres@localhost:5432/job_portal_test
       SECRET_KEY: ci-only-job-portal-signing-secret-never-use-outside-ci
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7.0.1
+      - uses: actions/setup-python@v7.1.0
         with:
           python-version: "3.11"
           cache: pip
