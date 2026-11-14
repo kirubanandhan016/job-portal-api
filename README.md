@@ -48,6 +48,21 @@ tests/
 requirements.txt
 ```
 
+## Request flow and architecture
+
+```mermaid
+flowchart TD
+    C[Browser or API client] --> F[FastAPI application]
+    F --> R[Auth, users, jobs, applications routers]
+    R --> D[Authentication and role dependencies]
+    R --> ORM[SQLAlchemy models]
+    ORM --> DB[(PostgreSQL)]
+    F --> UI[Static HTML, CSS and JavaScript]
+    T[Pytest security and workflow tests] --> R
+```
+
+The routers expose the API contract, dependencies enforce authentication and role checks, and SQLAlchemy models persist users, jobs, and applications. The static frontend is served by the same FastAPI application.
+
 ## Local setup
 
 Clone the repository and create a virtual environment:
