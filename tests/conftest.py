@@ -16,11 +16,17 @@ from app.database import Base
 
 @pytest.fixture
 def db_session():
-    engine = create_engine(
-        "sqlite://",
-        connect_args={"check_same_thread": False},
-        poolclass=StaticPool,
-    )
+    test_database_url = os.getenv("TEST_DATABASE_URL")
+    if test_database_url:
+        # CI exercises the same PostgreSQL dialect used by the application.
+        engine = create_engine(test_database_url, pool_pre_ping=True)
+    else:
+        # Keep local tests isolated and fast with an in-memory SQLite database.
+        engine = create_engine(
+            "sqlite://",
+            connect_args={"check_same_thread": False},
+            poolclass=StaticPool,
+        )
     Base.metadata.create_all(bind=engine)
     testing_session = sessionmaker(bind=engine, autoflush=False, autocommit=False)
     session = testing_session()
