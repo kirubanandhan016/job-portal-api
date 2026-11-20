@@ -38,6 +38,7 @@ def upgrade() -> None:
         sa.Column("created_at", sa.DateTime(timezone=True), nullable=False),
         sa.Column("employer_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
     )
+    op.create_index("ix_jobs_id", "jobs", ["id"])
     op.create_index("ix_jobs_title", "jobs", ["title"])
     op.create_index("ix_jobs_location", "jobs", ["location"])
     op.create_index("ix_jobs_employer_id", "jobs", ["employer_id"])
@@ -52,17 +53,20 @@ def upgrade() -> None:
         sa.Column("applicant_id", sa.Integer(), sa.ForeignKey("users.id", ondelete="CASCADE"), nullable=False),
         sa.UniqueConstraint("job_id", "applicant_id", name="uq_job_applicant"),
     )
+    op.create_index("ix_applications_id", "applications", ["id"])
     op.create_index("ix_applications_job_id", "applications", ["job_id"])
     op.create_index("ix_applications_applicant_id", "applications", ["applicant_id"])
 
 
 def downgrade() -> None:
     op.drop_index("ix_applications_applicant_id", table_name="applications")
+    op.drop_index("ix_applications_id", table_name="applications")
     op.drop_index("ix_applications_job_id", table_name="applications")
     op.drop_table("applications")
     op.drop_index("ix_jobs_employer_id", table_name="jobs")
     op.drop_index("ix_jobs_location", table_name="jobs")
     op.drop_index("ix_jobs_title", table_name="jobs")
+    op.drop_index("ix_jobs_id", table_name="jobs")
     op.drop_table("jobs")
     op.drop_index("ix_users_id", table_name="users")
     op.drop_index("ix_users_email", table_name="users")
