@@ -143,7 +143,7 @@ Inspect the current revision with `alembic current`. Generate a candidate migrat
 
 Create a PostgreSQL database and a dedicated application user. Grant that user only the permissions required by the application. Configure the same connection values in `.env`.
 
-The application creates the current SQLAlchemy metadata during startup. This repository does not currently include Alembic migrations; use a controlled schema migration process before evolving a production database.
+The database schema is managed with versioned Alembic migrations. Apply migrations with `alembic upgrade head`; the Docker Compose API container runs this command before starting Uvicorn. The GitHub Actions workflow applies the initial migration to PostgreSQL 16 and verifies the recorded revision and expected tables. Do not rely on automatic `create_all()` calls for schema upgrades.
 
 ## Run the application
 
@@ -245,11 +245,11 @@ The test suite uses an isolated SQLite database and covers:
 
 The tests exercise the route-handler functions with SQLAlchemy sessions; they are not full HTTP-client end-to-end tests.
 
-GitHub Actions runs the test suite on pushes and pull requests, then verifies PostgreSQL 16 connectivity and creates the users, jobs, and applications tables. The PostgreSQL step is a schema/connectivity smoke check, not a full application workflow test against PostgreSQL. Schema creation currently uses SQLAlchemy `Base.metadata.create_all`; Alembic migrations are not yet implemented.
+GitHub Actions runs the security and workflow tests on pushes and pull requests, applies the Alembic migration to a PostgreSQL 16 service, verifies the recorded revision and required tables, and builds the Docker image. The automated test suite uses isolated SQLite sessions for route-level tests; the PostgreSQL CI step currently verifies migration application and schema state rather than running the full HTTP workflow suite against PostgreSQL.
 
 ## Project status and limitations
 
-This is a learning and portfolio project, not a production recruitment service. The employer approval process is currently a trusted, out-of-band database-administrator operation. An application-managed approval queue, audit trail, rate limiting, token revocation, PostgreSQL integration testing, schema migrations, and deployment hardening remain future work.
+This is a learning and portfolio project, not a production recruitment service. The employer approval process is currently a trusted, out-of-band database-administrator operation. An application-managed approval queue, audit trail, rate limiting, token revocation, full PostgreSQL-backed application workflow tests, deployment hardening, and operational monitoring remain future work.
 
 ## Author
 
