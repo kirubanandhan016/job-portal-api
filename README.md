@@ -107,6 +107,28 @@ Put the generated value in `SECRET_KEY`. The application refuses to start when t
 
 You may supply `DATABASE_URL` instead of the individual `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USER`, and `DB_PASSWORD` values.
 
+## Run with Docker Compose
+
+Docker Compose starts PostgreSQL and the FastAPI application. The application currently creates its SQLAlchemy tables at startup; this project does not yet have Alembic migrations.
+
+PowerShell:
+
+```powershell
+$env:POSTGRES_PASSWORD = "use-a-long-local-password"
+$env:SECRET_KEY = python -c "import secrets; print(secrets.token_urlsafe(48))"
+docker compose up --build
+```
+
+macOS/Linux:
+
+```bash
+export POSTGRES_PASSWORD='use-a-long-local-password'
+export SECRET_KEY="$(python -c 'import secrets; print(secrets.token_urlsafe(48))')"
+docker compose up --build
+```
+
+Open `http://localhost:8000/docs` for Swagger UI or `http://localhost:8000/` for the web interface. Stop with `docker compose down`. Add `-v` only when you intentionally want to remove the local PostgreSQL data volume. Use a URL-safe alphanumeric database password for this Compose example; never reuse local credentials in production.
+
 ## PostgreSQL setup
 
 Create a PostgreSQL database and a dedicated application user. Grant that user only the permissions required by the application. Configure the same connection values in `.env`.
