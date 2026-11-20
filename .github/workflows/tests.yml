@@ -56,3 +56,6 @@ jobs:
           print(f"PostgreSQL tables verified: {sorted(tables)}")
           engine.dispose()
           PY
+
+      - name: Build Docker image
+        run: docker build --tag job-portal-api:ci .
