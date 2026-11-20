@@ -109,7 +109,7 @@ You may supply `DATABASE_URL` instead of the individual `DB_HOST`, `DB_PORT`, `D
 
 ## Run with Docker Compose
 
-Docker Compose starts PostgreSQL and the FastAPI application. The application currently creates its SQLAlchemy tables at startup; this project does not yet have Alembic migrations.
+Docker Compose starts PostgreSQL and the FastAPI application. The application schema is managed by Alembic. The Docker entrypoint runs `alembic upgrade head` before starting Uvicorn. For local development, install dependencies and run `alembic upgrade head` after setting `DATABASE_URL` and `SECRET_KEY`.
 
 PowerShell:
 
@@ -128,6 +128,16 @@ docker compose up --build
 ```
 
 Open `http://localhost:8000/docs` for Swagger UI or `http://localhost:8000/` for the web interface. Stop with `docker compose down`. Add `-v` only when you intentionally want to remove the local PostgreSQL data volume. Use a URL-safe alphanumeric database password for this Compose example; never reuse local credentials in production.
+
+## Database migrations
+
+After setting `DATABASE_URL` and `SECRET_KEY`, apply the versioned schema:
+
+```bash
+alembic upgrade head
+```
+
+Inspect the current revision with `alembic current`. Generate a candidate migration after model changes with `alembic revision --autogenerate -m "describe change"`, then review the generated operations before committing.
 
 ## PostgreSQL setup
 
