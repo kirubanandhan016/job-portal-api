@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException
 
-from app.models import User
+from app.models import Job, User
 from app.routers.applications import (
     apply_for_job,
     get_application,
@@ -151,3 +151,54 @@ def test_applicant_cannot_read_another_users_application(db_session):
     with pytest.raises(HTTPException) as forbidden:
         get_application(application.id, other_applicant, db_session)
     assert forbidden.value.status_code == 403
+
+
+@pytest.mark.parametrize(
+    "salary_min,salary_max",
+    [(-1, 100), (100, -1), (900, 500)],
+)
+def test_database_rejects_invalid_job_salary_ranges(
+    db_session, salary_min, salary_max
+):
+    from sqlalchemy.exc import IntegrityError
+
+    employer = make_user(db_session, "salary-check@example.com", "employer")
+    invalid_job = Job(
+        title="Invalid salary range",
+        description="Should be rejected by database constraints.",
+        company="Example Systems",
+        location="Bengaluru",
+        employment_type="full_time",
+        salary_min=salary_min,
+        salary_max=salary_max,
+        employer_id=employer.id,
+    )
+    db_session.add(invalid_job)
+
+    with pytest.raises(IntegrityError):
+        db_session.commit()
+    db_session.rollback()
+
+
+def test_job_schema_rejects_negative_or_inverted_salary_ranges():
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        JobCreate(
+            title="Python Developer",
+            description="Build APIs",
+            company="Example",
+            location="Bengaluru",
+            salary_min=-1,
+            salary_max=500000,
+        )
+
+    with pytest.raises(ValidationError, match="salary_min cannot exceed salary_max"):
+        JobCreate(
+            title="Python Developer",
+            description="Build APIs",
+            company="Example",
+            location="Bengaluru",
+            salary_min=900000,
+            salary_max=500000,
+        )
