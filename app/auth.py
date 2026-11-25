@@ -7,6 +7,7 @@ from app.database import settings
 
 ALGORITHM = "HS256"
 password_hash = PasswordHash.recommended()
+_DUMMY_PASSWORD_HASH = password_hash.hash("not-a-real-user-password")
 
 
 def hash_password(password: str) -> str:
@@ -15,6 +16,11 @@ def hash_password(password: str) -> str:
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
     return password_hash.verify(plain_password, hashed_password)
+
+
+def burn_password_verification(plain_password: str) -> None:
+    """Perform a password hash check for unknown accounts to reduce timing clues."""
+    password_hash.verify(plain_password, _DUMMY_PASSWORD_HASH)
 
 
 def create_access_token(subject: str) -> str:
