@@ -4,7 +4,12 @@ from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.auth import create_access_token, hash_password, verify_password
+from app.auth import (
+    burn_password_verification,
+    create_access_token,
+    hash_password,
+    verify_password,
+)
 from app.dependencies import get_db
 from app.models import User
 from app.schemas import Token, UserCreate, UserResponse
@@ -39,6 +44,8 @@ def login(
     form: OAuth2PasswordRequestForm = Depends(), db: Session = Depends(get_db)
 ) -> Token:
     user = db.scalar(select(User).where(User.email == form.username.lower()))
+    if user is None:
+        burn_password_verification(form.password)
     if user is None or not verify_password(form.password, user.hashed_password):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
