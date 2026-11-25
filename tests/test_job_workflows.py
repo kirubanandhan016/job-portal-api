@@ -1,7 +1,7 @@
 import pytest
 from fastapi import HTTPException
 
-from app.models import User
+from app.models import Job, User
 from app.routers.applications import (
     apply_for_job,
     get_application,
