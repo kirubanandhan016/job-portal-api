@@ -112,3 +112,27 @@ def test_expired_access_token_is_rejected(db_session):
         get_current_user(token=token, db=db_session)
 
     assert error.value.status_code == 401
+
+
+def test_unknown_login_performs_dummy_password_verification(db_session, monkeypatch):
+    from types import SimpleNamespace
+
+    from fastapi import HTTPException
+
+    import app.routers.auth as auth_routes
+
+    calls = []
+    monkeypatch.setattr(
+        auth_routes,
+        "burn_password_verification",
+        lambda password: calls.append(password),
+    )
+
+    with pytest.raises(HTTPException) as error:
+        auth_routes.login(
+            form=SimpleNamespace(username="missing@example.com", password="wrong-password"),
+            db=db_session,
+        )
+
+    assert error.value.status_code == 401
+    assert calls == ["wrong-password"]
