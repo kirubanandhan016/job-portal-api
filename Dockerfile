@@ -7,11 +7,16 @@ WORKDIR /app
 
 COPY requirements.txt .
 RUN python -m pip install --no-cache-dir --upgrade pip \
-    && python -m pip install --no-cache-dir -r requirements.txt
+    && python -m pip install --no-cache-dir -r requirements.txt \
+    && groupadd --system app \
+    && useradd --system --gid app --home-dir /app app \
+    && chown app:app /app
 
-COPY app ./app
-COPY alembic.ini .
-COPY alembic ./alembic
+COPY --chown=app:app app ./app
+COPY --chown=app:app alembic.ini .
+COPY --chown=app:app alembic ./alembic
+
+USER app
 
 EXPOSE 8000
 
