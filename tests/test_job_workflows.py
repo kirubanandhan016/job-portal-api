@@ -178,3 +178,27 @@ def test_database_rejects_invalid_job_salary_ranges(
     with pytest.raises(IntegrityError):
         db_session.commit()
     db_session.rollback()
+
+
+def test_job_schema_rejects_negative_or_inverted_salary_ranges():
+    from pydantic import ValidationError
+
+    with pytest.raises(ValidationError):
+        JobCreate(
+            title="Python Developer",
+            description="Build APIs",
+            company="Example",
+            location="Bengaluru",
+            salary_min=-1,
+            salary_max=500000,
+        )
+
+    with pytest.raises(ValidationError, match="salary_min cannot exceed salary_max"):
+        JobCreate(
+            title="Python Developer",
+            description="Build APIs",
+            company="Example",
+            location="Bengaluru",
+            salary_min=900000,
+            salary_max=500000,
+        )
