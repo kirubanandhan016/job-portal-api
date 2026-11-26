@@ -258,3 +258,17 @@ This is a learning and portfolio project, not a production recruitment service. 
 - GitHub: [@kirubanandhan016](https://github.com/kirubanandhan016)
 - Portfolio: [kirubanandhan016.github.io](https://kirubanandhan016.github.io/)
 - LinkedIn: [Kirubanandhan V](https://www.linkedin.com/in/kirubanandhan-v-98bb83443/)
+
+
+## Portfolio documentation
+
+- [Architecture diagram](docs/ARCHITECTURE.md)
+- [Database ER diagram](docs/ER_DIAGRAM.md)
+- [API request examples](docs/API_EXAMPLES.md)
+- Swagger/OpenAPI: `/docs`; ReDoc: `/redoc` after starting the service.
+- [Environment template](.env.example); copy to `.env`, set a generated secret and database credentials, and keep real values out of Git.
+- Tests: `python -m pytest -v`; see GitHub Actions for CI checks.
+
+## Screenshots and deployment
+
+A verified public deployment URL and committed screenshots are not available yet. Capture the job-search interface, Swagger UI, and sample API responses using synthetic data. Redact bearer tokens and personal information, store approved images under `docs/screenshots/`, and add a live URL only after deployment and health-check verification.
